@@ -5,28 +5,23 @@ local config = Config
 local speedMultiplier = config.UseMPH and 2.23694 or 3.6
 local seatbeltIsOn = false
 local hasPlayerLoaded = false
-
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function(player)
     hasPlayerLoaded = true
 end)
-
 RegisterNetEvent('hud:client:UpdateNeeds')
 AddEventHandler('hud:client:UpdateNeeds', function(newHunger, newThirst)
     hunger = newHunger
     thirst = newThirst
 end)
-
 RegisterNetEvent('hud:client:UpdateStress', function(newStress) -- Add this event with adding stress elsewhere
     stress = newStress
 end)
-
 function PauseMenuState()
     if hasPlayerLoaded then
         return IsPauseMenuActive()
     end
     return true
 end
-
 Citizen.CreateThread(function()
     while true do 
         local ped = GetPlayerPed(-1)
@@ -42,15 +37,10 @@ Citizen.CreateThread(function()
         local damage = GetVehicleEngineHealth(vehicle)
         
         if IsPedSittingInAnyVehicle(ped) and not IsPlayerDead(ped) then
-
             DisplayRadar(true)
-
         elseif not IsPedSittingInAnyVehicle(ped) then
-
             DisplayRadar(false)
-
         end
-
         if (IsPedInAnyVehicle) then
             fuelLevel = GetVehicleFuelLevel(vehicle)
             gearLevel = GetVehicleCurrentGear(vehicle)
@@ -65,7 +55,6 @@ Citizen.CreateThread(function()
         end
         
         local retval , lightsOn , highbeamsOn = GetVehicleLightsState(vehicle)
-
         if lightsOn == 1 and highbeamsOn == 0 then
             vehicleLight = 'normal'
         elseif (lightsOn == 1 and highbeamsOn == 1) or (lightsOn == 0 and highbeamsOn == 1) then
@@ -73,7 +62,6 @@ Citizen.CreateThread(function()
         else
             vehicleLight = 'off'
         end
-
         SendNUIMessage({
             pauseMenu = PauseMenuState();
             armour = GetPedArmour(PlayerPedId());
@@ -87,7 +75,6 @@ Citizen.CreateThread(function()
             isinthewaterswiming = IsPedSwimming(ped);
             oxigenoagua = GetPlayerUnderwaterTimeRemaining(PlayerId())*10;
             oxigeno = 100-GetPlayerSprintStaminaRemaining(PlayerId());
-
             type = 'carhud:update';
             isInVehicle = IsPedInAnyVehicle;
             speed = speedLevel;
@@ -99,37 +86,31 @@ Citizen.CreateThread(function()
             locked = GetVehicleDoorLockStatus(vehicle);
             damage = damage;
         })
-
-
         RegisterCommand('hidehud',function()    -- Command for hiding the hud
             SendNUIMessage({
                 quitarhud = true
             })
         end)
-
         RegisterCommand('showhud',function()    -- Command for showing the hud
             SendNUIMessage({
                 ponerhud = true
             })
         end)
-
         RegisterCommand('startcinematic',function()  -- Command to make black bars appear on the screen (21:9)
             DisplayHud(false)
             SendNUIMessage({
                 ponerbarras = true
             })
         end)
-
         RegisterCommand('stopcinematic',function()  -- Command to make black bars disappear on the screen (21:9)
             SendNUIMessage({
                 quitarbarras = true
             })
         end)
-
         Citizen.Wait(500)
         
 	end
-	
+
 end)
 
 ---------------------------------ENGINE ON/OFF---------------------------------
@@ -151,7 +132,6 @@ end)
 RegisterNetEvent('hud:client:UpdateStress', function(newStress)
     stress = newStress
 end)
-
 CreateThread(function()
     while true do
         if LocalPlayer.state.isLoggedIn then
@@ -167,7 +147,6 @@ CreateThread(function()
         Wait(10000)
     end
 end)
-
 local function IsWhitelistedWeaponStress(weapon)
     if weapon then
         for _, v in pairs(config.WhitelistedWeaponStress) do
@@ -178,7 +157,6 @@ local function IsWhitelistedWeaponStress(weapon)
     end
     return false
 end
-
 CreateThread(function()
     while true do
         if LocalPlayer.state.isLoggedIn then
@@ -197,7 +175,6 @@ CreateThread(function()
         Wait(8)
     end
 end)
-
 local function GetBlurIntensity(stresslevel)
     for _, v in pairs(config.Intensity['blur']) do
         if stresslevel >= v.min and stresslevel <= v.max then
@@ -206,7 +183,6 @@ local function GetBlurIntensity(stresslevel)
     end
     return 1500
 end
-
 local function GetEffectInterval(stresslevel)
     for _, v in pairs(config.EffectInterval) do
         if stresslevel >= v.min and stresslevel <= v.max then
@@ -215,7 +191,6 @@ local function GetEffectInterval(stresslevel)
     end
     return 60000
 end
-
 CreateThread(function()
     while true do
         local ped = PlayerPedId()
@@ -227,11 +202,9 @@ CreateThread(function()
             TriggerScreenblurFadeIn(1000.0)
             Wait(BlurIntensity)
             TriggerScreenblurFadeOut(1000.0)
-
             if not IsPedRagdoll(ped) and IsPedOnFoot(ped) and not IsPedSwimming(ped) then
                 SetPedToRagdollWithFall(ped, RagdollTimeout, RagdollTimeout, 1, GetEntityForwardVector(ped), 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
             end
-
             Wait(1000)
             for _ = 1, FallRepeat, 1 do
                 Wait(750)
@@ -251,16 +224,9 @@ CreateThread(function()
         Wait(effectInterval)
     end
 end)
-
 ---------------------------------STRESS---------------------------------
-
 ---------------------------------SPEEDOMETER--------------------------------
-
-
 local seatbeltIsOn = false
-
-
-
 function SetSeatBeltActive(e)
     if (e) then
         SendNUIMessage({
@@ -270,7 +236,6 @@ function SetSeatBeltActive(e)
         })
     end
 end
-
 AddEventHandler("seatbelt:client:ToggleSeatbelt", function()
     seatbeltIsOn = not seatbeltIsOn
     SetSeatBeltActive({
@@ -278,5 +243,4 @@ AddEventHandler("seatbelt:client:ToggleSeatbelt", function()
         checkIsVeh = true,
     })
 end)
-
 ---------------------------------SPEEDOMETER---------------------------------
